@@ -1,20 +1,16 @@
-const main = async () => {
-  const transactionsFactory = await hre.ethers.getContractFactory("Transactions");
-  const transactionsContract = await transactionsFactory.deploy();
+const {ethers, run, network} = require("hardhat")
 
-  await transactionsContract.deployed();
+async function main(){
+  const deployedContract = await ethers.deployContract("Transactions");
 
-  console.log("Transactions address: ", transactionsContract.address);
-};
+  await deployedContract.waitForDeployment();
 
-const runMain = async () => {
-  try {
-    await main();
-    process.exit(0);
-  } catch (error) {
-    console.error(error);
-    process.exit(1);
-  }
-};
+  console.log("SimpleStorage Contract Address:", await deployedContract.getAddress());
+}
 
-runMain();
+main()
+  	.then(()=>process.exit(0))
+  	.catch((error)=>{
+      console.log(error)
+      process.exit(1)
+    })
