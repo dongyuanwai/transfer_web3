@@ -42,6 +42,7 @@ export const TransactionProvider = ({ children }) => {
 			const accounts = await ethereum.request({ method: 'eth_accounts' })
 			if (accounts.length) {
 				setCurrentAccount(accounts[0])
+				getAllTransactions()
 			} else {
 				console.log("accounts", accounts)
 			}
@@ -51,6 +52,47 @@ export const TransactionProvider = ({ children }) => {
 		}
 
 	}
+
+	const checkIfTransactionsExists = async () => {
+    try {
+      if (ethereum) {
+        const transactionsContract = getEthereumContract();
+        const currentTransactionCount = await transactionsContract.getTransactionCount();
+
+        window.localStorage.setItem("transactionCount", currentTransactionCount);
+      }
+    } catch (error) {
+      console.log(error);
+			throw new Error("No ethereum object");
+    }
+  };
+
+	const getAllTransactions = async () => {
+    try {
+      if (ethereum) {
+        const transactionsContract = getEthereumContract();
+        const availableTransactions = await transactionsContract.getAllTransactions();
+
+        const structuredTransactions = availableTransactions.map((transaction) => ({
+          addressTo: transaction.receiver,
+          addressFrom: transaction.sender,
+          timestamp: new Date(transaction.timestamp.toNumber() * 1000).toLocaleString(),
+          message: transaction.message,
+          keyword: transaction.keyword,
+          amount: parseInt(transaction.amount._hex) / (10 ** 18)
+        }));
+
+        console.log(structuredTransactions);
+
+        setTransactions(structuredTransactions);
+      } else {
+        if (!ethereum) return alert("请安装Metamask!");
+      }
+    } catch (error) {
+      console.log(error);
+			throw new Error("没有获取到ethereum对象")
+    }
+  };
 
 	// 连接钱包
 	const connectWallet = async () => {
@@ -93,7 +135,7 @@ export const TransactionProvider = ({ children }) => {
 			const transactionsCount = await transactionContract.getTransactionCount();
 
 			setTransactionCount(transactionsCount.toNumber());
-			// window.location.reload();
+			window.location.reload();
 
 		} catch (error) {
 			console.log(error)
@@ -102,6 +144,7 @@ export const TransactionProvider = ({ children }) => {
 	}
 	useEffect(() => {
 		checkIfWalletIsConnected()
+		checkIfTransactionsExists()
 	}, [])
 	return (
 		<TransactionContext.Provider
@@ -111,7 +154,9 @@ export const TransactionProvider = ({ children }) => {
 				formData,
 				setformData,
 				handleChange,
-				sendTransaction
+				sendTransaction,
+				transactions,
+				isLoading
 			}}>
 			{children}
 		</TransactionContext.Provider>
