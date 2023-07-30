@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { HiMenuAlt4 } from "react-icons/hi";
-import { AiOutlineClose, AiFillGithub, AiFillTwitterCircle } from "react-icons/ai";
+import { AiOutlineClose, AiFillGithub, AiFillTwitterCircle,AiOutlineWechat } from "react-icons/ai";
 import { TbBrandJuejin } from "react-icons/tb";
 import logo from "../../images/logo.png";
 
@@ -17,12 +17,20 @@ const Navbar = () => {
   const jumpJuejin = () => {
     window.open("https://juejin.cn/user/3966693685594072/posts")
   }
+  const jumpWeChat = ()=>{
+    window.open("https://i.postimg.cc/ydZXWwJ1/web3wechat.png")
+  }
   return (
     <nav className="w-full flex md:justify-center justify-between items-center p-4">
       <div className="md:flex-[0.5] flex-initial justify-center items-center">
         <img src={logo} alt="logo" className="w-32 cursor-pointer" />
       </div>
       <ul className="text-white md:flex hidden list-none flex-row justify-between items-center flex-initial">
+        <li className={`mx-4 cursor-pointer flex items-center`} onClick={jumpWeChat}>
+          <AiOutlineWechat fontSize={24} className="mr-2" />
+          WeChat
+        </li>
+        
         <li className={`mx-4 cursor-pointer flex items-center`} onClick={jumpJuejin}>
           <TbBrandJuejin fontSize={24} className="mr-2" />
           Juejin
@@ -35,8 +43,8 @@ const Navbar = () => {
           <AiFillGithub fontSize={24} className="mr-2" />
           GitHub
         </li>
-        <li className="bg-[#2952e3] py-2 px-7 mx-4 rounded-full cursor-pointer hover:bg-[#2546bd]" onClick={() => alert("敬请期待！")}>
-          Login
+        <li className="bg-[#2952e3] py-2 px-7 mx-4 rounded-full cursor-pointer hover:bg-[#2546bd]"  onClick={jumpWeChat}>
+          Contact me
         </li>
       </ul>
       <div className="flex relative">
